@@ -1,3 +1,11 @@
 {
-    "dotnet.defaultSolution": "PaySmartly.sln"
+    "dotnet.defaultSolution": "PaySmartly.sln",
+    "files.exclude": {
+        "**/obj": true,
+        "**/bin": true,
+        "**/*.csproj": true,
+        "**/appsettings*": true,
+        "**/.gitignore": true,
+        "**/PaySmartly.sln": true,
+    },
 }

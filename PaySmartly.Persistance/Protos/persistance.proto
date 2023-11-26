@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+option csharp_namespace = "PaySmartly.Persistance";
+
+package persistance;
+
+service Persistance {
+  rpc Create (CreateRequest) returns (Record);
+  rpc Get (GetRequest) returns (Record);
+  rpc Delete (DeleteRequest) returns (Record);
+}
+message CreateRequest {
+  PaySlip paySlip = 1;
+}
+
+message GetRequest {
+  string id = 1;
+}
+
+message DeleteRequest {
+  string id = 1;
+}
+
+message Record {
+  string id = 1;
+  PaySlip paySlip = 2;
+}
+
+message PaySlip {
+  string employeeFirstName = 1;
+  string employeeLastName = 2;
+  double annualSalary = 3;
+  double superRate = 4;
+  string payPeriod = 5;
+  int32 roundTo = 6;
+  int32 months = 7;
+  double grossIncome = 8;
+  double incomeTax = 9;
+  double netIncome = 10;
+  double super = 11;
+  string requesterFirstName = 12;
+  string requesterLastName = 13;
+}
