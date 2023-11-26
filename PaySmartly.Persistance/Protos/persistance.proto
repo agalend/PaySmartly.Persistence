@@ -10,7 +10,7 @@ service Persistance {
   rpc Delete (DeleteRequest) returns (Record);
 }
 message CreateRequest {
-  PaySlip paySlip = 1;
+  PaySlipData data = 1;
 }
 
 message GetRequest {
@@ -23,10 +23,10 @@ message DeleteRequest {
 
 message Record {
   string id = 1;
-  PaySlip paySlip = 2;
+  PaySlipData data = 2;
 }
 
-message PaySlip {
+message PaySlipData {
   string employeeFirstName = 1;
   string employeeLastName = 2;
   double annualSalary = 3;

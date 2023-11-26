@@ -7,8 +7,8 @@ public class PersistanceService(ILogger<PersistanceService> logger) : Persistanc
 {
     private readonly ILogger<PersistanceService> logger = logger;
 
-    private int currentId = -1;
-    private readonly ConcurrentDictionary<string, Record> records = new();
+    private static int currentId = -1;
+    private static readonly ConcurrentDictionary<string, Record> records = new();
 
     public override Task<Record> Create(CreateRequest request, ServerCallContext context)
     {
@@ -17,7 +17,7 @@ public class PersistanceService(ILogger<PersistanceService> logger) : Persistanc
         Record record = new()
         {
             Id = id,
-            PaySlip = request.PaySlip
+            Data = request.Data
         };
 
         Record added = records.AddOrUpdate(id, record, (key, old) => record);
@@ -29,12 +29,16 @@ public class PersistanceService(ILogger<PersistanceService> logger) : Persistanc
     {
         records.TryGetValue(request.Id, out Record? record);
 
+        // TODO: return default record with null
+
         return Task.FromResult(record);
     }
 
     public override Task<Record?> Delete(DeleteRequest request, ServerCallContext context)
     {
         records.Remove(request.Id, out Record? record);
+
+        // TODO: return default record with null
 
         return Task.FromResult(record);
     }
