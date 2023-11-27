@@ -1,52 +1,107 @@
-using System.Collections.Concurrent;
 using Grpc.Core;
+using PaySmartly.Persistance.Mongo;
+using PaySmartly.Persistance.Repository;
 
 namespace PaySmartly.Persistance.Services;
 
-public class PersistanceService(ILogger<PersistanceService> logger) : Persistance.PersistanceBase
+public class PersistanceService(
+    IRepository repository,
+    ILogger<PersistanceService> logger
+    ) : Persistance.PersistanceBase
 {
+    private readonly IRepository repository = repository;
     private readonly ILogger<PersistanceService> logger = logger;
 
-    private static int currentId = -1;
-    private static readonly ConcurrentDictionary<string, Record> records = new();
-
-    public override Task<Record> Create(CreateRequest request, ServerCallContext context)
+    public override async Task<Record> Create(CreateRequest request, ServerCallContext context)
     {
-        string id = GenerateNextId(ref currentId);
+        MongoRecord mongoRecord = Convert(request.Data);
 
-        Record record = new()
+        mongoRecord = await repository.Add(mongoRecord);
+
+        if (mongoRecord is null)
         {
-            Id = id,
-            Data = request.Data
+            return new() { Exists = false };
+        }
+        else
+        {
+            Record paySlipRecord = Convert(mongoRecord);
+            return paySlipRecord;
+        }
+    }
+
+    public override async Task<Record?> Get(GetRequest request, ServerCallContext context)
+    {
+        MongoRecord mongoRecord = await repository.Get(request.Id);
+
+        if (mongoRecord is null)
+        {
+            return new() { Exists = false };
+        }
+        else
+        {
+            Record paySlipRecord = Convert(mongoRecord);
+            return paySlipRecord;
+        }
+    }
+
+    public override async Task<Record?> Delete(DeleteRequest request, ServerCallContext context)
+    {
+        MongoRecord mongoRecord = await repository.Delete(request.Id);
+
+        if (mongoRecord is null)
+        {
+            return new() { Exists = false };
+        }
+        else
+        {
+
+            Record paySlipRecord = Convert(mongoRecord);
+            return paySlipRecord;
+        }
+    }
+
+    private Record Convert(MongoRecord record)
+    {
+        return new()
+        {
+            Id = record.Id,
+            Data = new Data()
+            {
+                EmployeeFirstName = record.EmployeeFirstName,
+                EmployeeLastName = record.EmployeeLastName,
+                AnnualSalary = record.AnnualSalary,
+                SuperRate = record.SuperRate,
+                PayPeriod = record.PayPeriod,
+                RoundTo = record.RoundTo,
+                Months = record.Months,
+                GrossIncome = record.GrossIncome,
+                IncomeTax = record.IncomeTax,
+                NetIncome = record.NetIncome,
+                Super = record.Super,
+                RequesterFirstName = record.RequesterFirstName,
+                RequesterLastName = record.RequesterLastName
+            },
+            Exists = true
         };
-
-        Record added = records.AddOrUpdate(id, record, (key, old) => record);
-
-        return Task.FromResult(record);
     }
 
-    public override Task<Record?> Get(GetRequest request, ServerCallContext context)
+    public MongoRecord Convert(Data data)
     {
-        records.TryGetValue(request.Id, out Record? record);
-
-        // TODO: return default record with null
-
-        return Task.FromResult(record);
-    }
-
-    public override Task<Record?> Delete(DeleteRequest request, ServerCallContext context)
-    {
-        records.Remove(request.Id, out Record? record);
-
-        // TODO: return default record with null
-
-        return Task.FromResult(record);
-    }
-
-    private static string GenerateNextId(ref int previousId)
-    {
-        int id = Interlocked.Increment(ref previousId);
-        string strId = id.ToString();
-        return strId;
+        return new()
+        {
+            EmployeeFirstName = data.EmployeeFirstName,
+            EmployeeLastName = data.EmployeeLastName,
+            AnnualSalary = data.AnnualSalary,
+            SuperRate = data.SuperRate,
+            PayPeriod = data.PayPeriod,
+            RoundTo = data.RoundTo,
+            Months = data.Months,
+            GrossIncome = data.GrossIncome,
+            IncomeTax = data.IncomeTax,
+            NetIncome = data.NetIncome,
+            Super = data.Super,
+            RequesterFirstName = data.RequesterFirstName,
+            RequesterLastName = data.RequesterLastName
+        };
     }
 }
