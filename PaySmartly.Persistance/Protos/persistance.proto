@@ -4,13 +4,15 @@ option csharp_namespace = "PaySmartly.Persistance";
 
 package persistance;
 
+import "google/protobuf/timestamp.proto";
+
 service Persistance {
-  rpc Create (CreateRequest) returns (Record);
-  rpc Get (GetRequest) returns (Record);
-  rpc Delete (DeleteRequest) returns (Record);
+  rpc Create (CreateRequest) returns (Response);
+  rpc Get (GetRequest) returns (Response);
+  rpc Delete (DeleteRequest) returns (Response);
 }
 message CreateRequest {
-  Data data = 1;
+  Record record = 1;
 }
 
 message GetRequest {
@@ -21,24 +23,25 @@ message DeleteRequest {
   string id = 1;
 }
 
-message Record {
-  string id = 1;
-  Data data = 2;
-  bool Exists = 3;
+message Response {
+  Record record = 1;
+  bool Exists = 2;
 }
 
-message Data {
-  string employeeFirstName = 1;
-  string employeeLastName = 2;
-  double annualSalary = 3;
-  double superRate = 4;
-  string payPeriod = 5;
-  int32 roundTo = 6;
-  int32 months = 7;
-  double grossIncome = 8;
-  double incomeTax = 9;
-  double netIncome = 10;
-  double super = 11;
-  string requesterFirstName = 12;
-  string requesterLastName = 13;
+message Record {
+  string id = 1;
+  string employeeFirstName = 2;
+  string employeeLastName = 3;
+  double annualSalary = 4;
+  double superRate = 5;
+  string payPeriod = 6;
+  int32 roundTo = 7;
+  int32 months = 8;
+  double grossIncome = 9;
+  double incomeTax = 10;
+  double netIncome = 11;
+  double super = 12;
+  string requesterFirstName = 13;
+  string requesterLastName = 14;
+  google.protobuf.Timestamp createdAt = 15;
 }

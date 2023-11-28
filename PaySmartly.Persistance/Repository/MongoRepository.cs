@@ -28,16 +28,17 @@ namespace PaySmartly.Persistance.Repository
         {
             await paySlipRecords.InsertOneAsync(paySlipRecord);
 
-            // meanwhile someone can remove the record and we are going to return null here
-            // indicating that the Add method was not successful
-            MongoRecord record = await Get(paySlipRecord.Id);
+            // meanwhile someone can delete the record and we are going to return null here
+            // indicating that the Add method was not successful/in race with delete 
+            MongoRecord record = await Get(paySlipRecord.Id!);
             return record;
         }
 
-        public async Task<MongoRecord> Get(string? id)
+        public async Task<MongoRecord> Get(string id)
         {
             MongoRecord record = await paySlipRecords.Find(x => x.Id == id).FirstOrDefaultAsync();
-            return record;
+
+            return record is null ? default! : record;
         }
 
         public async Task<MongoRecord> Delete(string id)
@@ -52,8 +53,6 @@ namespace PaySmartly.Persistance.Repository
             {
                 await paySlipRecords.DeleteOneAsync(x => x.Id == id);
 
-                // meanwhile someone can delete this record but we have already taken the value
-                // and therefore it is safe to return it
                 return record;
             }
         }

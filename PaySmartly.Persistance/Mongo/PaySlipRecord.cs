@@ -21,5 +21,6 @@ namespace PaySmartly.Persistance.Mongo
         public double Super { get; set; }
         public string RequesterFirstName { get; set; } = null!;
         public string RequesterLastName { get; set; } = null!;
+        public DateTime CreatedAt { get; set; }
     }
 }

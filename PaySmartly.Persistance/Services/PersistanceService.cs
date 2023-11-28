@@ -1,6 +1,7 @@
 using Grpc.Core;
 using PaySmartly.Persistance.Mongo;
 using PaySmartly.Persistance.Repository;
+using static PaySmartly.Persistance.Services.Converter;
 
 namespace PaySmartly.Persistance.Services;
 
@@ -12,10 +13,9 @@ public class PersistanceService(
     private readonly IRepository repository = repository;
     private readonly ILogger<PersistanceService> logger = logger;
 
-    public override async Task<Record> Create(CreateRequest request, ServerCallContext context)
+    public override async Task<Response> Create(CreateRequest request, ServerCallContext context)
     {
-        MongoRecord mongoRecord = Convert(request.Data);
-
+        MongoRecord mongoRecord = Convert(request.Record);
         mongoRecord = await repository.Add(mongoRecord);
 
         if (mongoRecord is null)
@@ -24,12 +24,12 @@ public class PersistanceService(
         }
         else
         {
-            Record paySlipRecord = Convert(mongoRecord);
-            return paySlipRecord;
+            Record record = Convert(mongoRecord);
+            return new() { Record = record, Exists = true };
         }
     }
 
-    public override async Task<Record?> Get(GetRequest request, ServerCallContext context)
+    public override async Task<Response> Get(GetRequest request, ServerCallContext context)
     {
         MongoRecord mongoRecord = await repository.Get(request.Id);
 
@@ -39,12 +39,12 @@ public class PersistanceService(
         }
         else
         {
-            Record paySlipRecord = Convert(mongoRecord);
-            return paySlipRecord;
+            Record record = Convert(mongoRecord);
+            return new() { Record = record, Exists = true };
         }
     }
 
-    public override async Task<Record?> Delete(DeleteRequest request, ServerCallContext context)
+    public override async Task<Response> Delete(DeleteRequest request, ServerCallContext context)
     {
         MongoRecord mongoRecord = await repository.Delete(request.Id);
 
@@ -54,54 +54,8 @@ public class PersistanceService(
         }
         else
         {
-
-            Record paySlipRecord = Convert(mongoRecord);
-            return paySlipRecord;
+            Record record = Convert(mongoRecord);
+            return new() { Record = record, Exists = true };
         }
-    }
-
-    private Record Convert(MongoRecord record)
-    {
-        return new()
-        {
-            Id = record.Id,
-            Data = new Data()
-            {
-                EmployeeFirstName = record.EmployeeFirstName,
-                EmployeeLastName = record.EmployeeLastName,
-                AnnualSalary = record.AnnualSalary,
-                SuperRate = record.SuperRate,
-                PayPeriod = record.PayPeriod,
-                RoundTo = record.RoundTo,
-                Months = record.Months,
-                GrossIncome = record.GrossIncome,
-                IncomeTax = record.IncomeTax,
-                NetIncome = record.NetIncome,
-                Super = record.Super,
-                RequesterFirstName = record.RequesterFirstName,
-                RequesterLastName = record.RequesterLastName
-            },
-            Exists = true
-        };
-    }
-
-    public MongoRecord Convert(Data data)
-    {
-        return new()
-        {
-            EmployeeFirstName = data.EmployeeFirstName,
-            EmployeeLastName = data.EmployeeLastName,
-            AnnualSalary = data.AnnualSalary,
-            SuperRate = data.SuperRate,
-            PayPeriod = data.PayPeriod,
-            RoundTo = data.RoundTo,
-            Months = data.Months,
-            GrossIncome = data.GrossIncome,
-            IncomeTax = data.IncomeTax,
-            NetIncome = data.NetIncome,
-            Super = data.Super,
-            RequesterFirstName = data.RequesterFirstName,
-            RequesterLastName = data.RequesterLastName
-        };
     }
 }
