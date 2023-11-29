@@ -34,7 +34,7 @@ message Record {
   string employeeLastName = 3;
   double annualSalary = 4;
   double superRate = 5;
-  string payPeriod = 6;
+  google.protobuf.Timestamp payPeriod = 6;
   int32 roundTo = 7;
   int32 months = 8;
   double grossIncome = 9;
