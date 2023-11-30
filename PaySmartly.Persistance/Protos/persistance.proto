@@ -9,7 +9,12 @@ import "google/protobuf/timestamp.proto";
 service Persistance {
   rpc Create (CreateRequest) returns (Response);
   rpc Get (GetRequest) returns (Response);
-  rpc Delete (DeleteRequest) returns (Response);
+  rpc Delete (DeleteRequest) returns (DeleteResponse);
+  rpc DeleteAll (DeleteAllRequest) returns (DeleteResponse);
+
+  rpc GetAllForEmployee (GetAllForEmployeeRequest) returns (GetAllResponse);
+  rpc GetAllForSuperRate (GetAllForSuperRateRequest) returns (GetAllResponse);
+  rpc GetAllForAnnualSalary (GetAllForAnnualSalaryRequest) returns (GetAllResponse);
 }
 message CreateRequest {
   Record record = 1;
@@ -19,12 +24,46 @@ message GetRequest {
   string id = 1;
 }
 
+message GetAllForEmployeeRequest {
+  string firstName = 1;
+  string lastName = 2;
+  int32 limit = 3;
+  int32 offset = 4;
+}
+
+message GetAllForSuperRateRequest {
+  double from = 1;
+  double to = 2;
+  int32 limit = 3;
+  int32 offset = 4;
+}
+
+message GetAllForAnnualSalaryRequest {
+  double from = 1;
+  double to = 2;
+  int32 limit = 3;
+  int32 offset = 4;
+}
+
 message DeleteRequest {
   string id = 1;
 }
 
+message DeleteAllRequest {
+  repeated string ids = 1;
+}
+
 message Response {
   Record record = 1;
+  bool Exists = 2;
+}
+
+message DeleteResponse {
+  int64 count = 1;
+}
+
+message GetAllResponse {
+  repeated Record records = 1;
   bool Exists = 2;
 }
 
