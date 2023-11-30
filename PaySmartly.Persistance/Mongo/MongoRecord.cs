@@ -12,7 +12,8 @@ namespace PaySmartly.Persistance.Mongo
         public string EmployeeLastName { get; set; } = null!;
         public double AnnualSalary { get; set; }
         public double SuperRate { get; set; }
-        public DateTime PayPeriod { get; set; }
+        public DateTime PayPeriodFrom { get; set; }
+        public DateTime PayPeriodTo { get; set; }
         public int RoundTo { get; set; }
         public int Months { get; set; }
         public double GrossIncome { get; set; }

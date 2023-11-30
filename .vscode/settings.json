@@ -8,6 +8,7 @@
         "**/PaySmartly.sln": true,
     },
     "cSpell.words": [
-        "Bson"
+        "Bson",
+        "Protobuf"
     ],
 }

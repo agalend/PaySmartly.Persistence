@@ -34,14 +34,15 @@ message Record {
   string employeeLastName = 3;
   double annualSalary = 4;
   double superRate = 5;
-  google.protobuf.Timestamp payPeriod = 6;
-  int32 roundTo = 7;
-  int32 months = 8;
-  double grossIncome = 9;
-  double incomeTax = 10;
-  double netIncome = 11;
-  double super = 12;
-  string requesterFirstName = 13;
-  string requesterLastName = 14;
-  google.protobuf.Timestamp createdAt = 15;
+  google.protobuf.Timestamp payPeriodFrom = 6;
+  google.protobuf.Timestamp payPeriodTo = 7;
+  int32 roundTo = 8;
+  int32 months = 9;
+  double grossIncome = 10;
+  double incomeTax = 11;
+  double netIncome = 12;
+  double super = 13;
+  string requesterFirstName = 14;
+  string requesterLastName = 15;
+  google.protobuf.Timestamp createdAt = 16;
 }
