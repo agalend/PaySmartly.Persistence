@@ -1,4 +1,5 @@
 using Grpc.Core;
+using MongoDB.Bson;
 using PaySmartly.Persistance.Mongo;
 using PaySmartly.Persistance.Repository;
 using static PaySmartly.Persistance.Services.Converter;
@@ -26,6 +27,11 @@ public class PersistanceService(
 
     public override async Task<Response> Get(GetRequest request, ServerCallContext context)
     {
+        if (!IsValidId(request.Id))
+        {
+            return CreateResponse(default);
+        }
+
         MongoRecord mongoRecord = await repository.Get(request.Id);
 
         Response response = CreateResponse(mongoRecord);
@@ -35,6 +41,11 @@ public class PersistanceService(
 
     public override async Task<Response> Delete(DeleteRequest request, ServerCallContext context)
     {
+        if (!IsValidId(request.Id))
+        {
+            return CreateResponse(default);
+        }
+
         MongoRecord mongoRecord = await repository.Delete(request.Id);
 
         Response response = CreateResponse(mongoRecord);
@@ -42,7 +53,12 @@ public class PersistanceService(
         return response;
     }
 
-    private Response CreateResponse(MongoRecord mongoRecord)
+    private bool IsValidId(string? id)
+    {
+        return ObjectId.TryParse(id, out _);
+    }
+
+    private Response CreateResponse(MongoRecord? mongoRecord)
     {
         if (mongoRecord is null)
         {
