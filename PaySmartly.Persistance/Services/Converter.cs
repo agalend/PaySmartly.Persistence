@@ -23,7 +23,8 @@ namespace PaySmartly.Persistance.Services
                 NetIncome = record.NetIncome,
                 Super = record.Super,
                 RequesterFirstName = record.RequesterFirstName,
-                RequesterLastName = record.RequesterLastName
+                RequesterLastName = record.RequesterLastName,
+                CreatedAt = record.CreatedAt.ToTimestamp()
             };
         }
 

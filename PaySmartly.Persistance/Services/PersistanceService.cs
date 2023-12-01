@@ -18,27 +18,30 @@ public class PersistanceService(
 
     public override async Task<Response> Create(CreateRequest request, ServerCallContext context)
     {
-        MongoRecord? mongoRecord = Convert(request.Record);
+        if (!IsValidCreateRequest(request))
+        {
+            return CreateResponse(invalidParameters: true, default);
+        }
+        else
+        {
+            MongoRecord? record = Convert(request.Record);
+            record = await repository.Add(record!);
 
-        mongoRecord = await repository.Add(mongoRecord);
-
-        Response response = CreateResponse(mongoRecord);
-
-        return response;
+            return CreateResponse(invalidParameters: false, record);
+        }
     }
 
     public override async Task<Response> Get(GetRequest request, ServerCallContext context)
     {
         if (!IsValid(request.Id))
         {
-            return CreateResponse(default);
+            return CreateResponse(invalidParameters: true, default);
         }
         else
         {
+            MongoRecord? record = await repository.Get(request.Id);
 
-            MongoRecord? mongoRecord = await repository.Get(request.Id);
-
-            Response response = CreateResponse(mongoRecord);
+            Response response = CreateResponse(invalidParameters: false, record);
             return response;
         }
     }
@@ -47,13 +50,13 @@ public class PersistanceService(
     {
         if (!IsValid(request.Id))
         {
-            return CreateDeleteResponse(default);
+            return CreateDeleteResponse(invalidParameters: true, default);
         }
         else
         {
             long deleted = await repository.Delete(request.Id);
 
-            DeleteResponse response = CreateDeleteResponse(deleted);
+            DeleteResponse response = CreateDeleteResponse(invalidParameters: false, deleted);
             return response;
         }
     }
@@ -62,13 +65,13 @@ public class PersistanceService(
     {
         if (!AreValid(request.Ids))
         {
-            return CreateDeleteResponse(default);
+            return CreateDeleteResponse(invalidParameters: true, default);
         }
         else
         {
             long deleted = await repository.DeleteAll([.. request.Ids]);
 
-            DeleteResponse response = CreateDeleteResponse(deleted);
+            DeleteResponse response = CreateDeleteResponse(invalidParameters: false, deleted);
             return response;
         }
     }
@@ -77,13 +80,17 @@ public class PersistanceService(
     {
         if (!IsValidGetAllForEmployeeRequest(request))
         {
-            return CreateGetAllResponse(default);
+            return CreateGetAllResponse(invalidParameters: true, default);
         }
         else
         {
-            IEnumerable<MongoRecord> result = await repository.GetAllForEmployee(request.FirstName, request.LastName, request.Limit, request.Offset);
+            IEnumerable<MongoRecord> result = await repository.GetAllForEmployee(
+                                                                    request.FirstName,
+                                                                    request.LastName,
+                                                                    request.Limit,
+                                                                    request.Offset);
 
-            GetAllResponse response = CreateGetAllResponse(result);
+            GetAllResponse response = CreateGetAllResponse(invalidParameters: false, result);
             return response;
         }
     }
@@ -92,13 +99,17 @@ public class PersistanceService(
     {
         if (!IsValidGetAllForSuperRateRequest(request))
         {
-            return CreateGetAllResponse(default);
+            return CreateGetAllResponse(invalidParameters: true, default);
         }
         else
         {
-            IEnumerable<MongoRecord> result = await repository.GetAllForSuperRate(request.From, request.To, request.Limit, request.Offset);
+            IEnumerable<MongoRecord> result = await repository.GetAllForSuperRate(
+                                                                    request.From,
+                                                                    request.To,
+                                                                    request.Limit,
+                                                                    request.Offset);
 
-            GetAllResponse response = CreateGetAllResponse(result);
+            GetAllResponse response = CreateGetAllResponse(invalidParameters: false, result);
             return response;
         }
     }
@@ -107,13 +118,18 @@ public class PersistanceService(
     {
         if (!IsValidGetAllAnnualSalaryRequest(request))
         {
-            return CreateGetAllResponse(default);
+            return CreateGetAllResponse(invalidParameters: true, default);
         }
         else
         {
-            IEnumerable<MongoRecord> result = await repository.GetAllForAnnualSalary(request.From, request.To, request.Limit, request.Offset);
+            IEnumerable<MongoRecord> result = await repository.GetAllForAnnualSalary(
+                                                                    request.From,
+                                                                    request.To,
+                                                                    request.Limit,
+                                                                    request.Offset);
 
-            GetAllResponse response = CreateGetAllResponse(result);
+
+            GetAllResponse response = CreateGetAllResponse(invalidParameters: false, result);
             return response;
         }
     }

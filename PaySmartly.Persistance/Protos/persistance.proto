@@ -55,16 +55,19 @@ message DeleteAllRequest {
 
 message Response {
   Record record = 1;
-  bool Exists = 2;
+  bool exists = 2;
+  bool invalidParameters = 3;
 }
 
 message DeleteResponse {
   int64 count = 1;
+  bool invalidParameters = 2;
 }
 
 message GetAllResponse {
   repeated Record records = 1;
-  bool Exists = 2;
+  bool exists = 2;
+  bool invalidParameters = 3;
 }
 
 message Record {

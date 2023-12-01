@@ -4,37 +4,37 @@ namespace PaySmartly.Persistance.Mongo
 {
     public static class MongoResponseFactor
     {
-        public static Response CreateResponse(MongoRecord? mongoRecord)
+        public static Response CreateResponse(bool invalidParameters, MongoRecord? mongoRecord)
         {
-            if (mongoRecord is null)
+            if (invalidParameters)
             {
-                return new() { Exists = false };
+                return new() { Exists = false, InvalidParameters = invalidParameters };
             }
             else
             {
-                Record record = Convert(mongoRecord);
-                return new() { Record = record, Exists = true };
+                Record? record = mongoRecord is null ? default : Convert(mongoRecord);
+                return new() { Record = record, Exists = record is not null, InvalidParameters = invalidParameters };
             }
         }
 
-        public static DeleteResponse CreateDeleteResponse(long? count)
+        public static DeleteResponse CreateDeleteResponse(bool invalidParameters, long? count)
         {
-            return count is null
-            ? new DeleteResponse() { Count = 0 }
-            : new DeleteResponse() { Count = count.Value };
+            return invalidParameters
+            ? new DeleteResponse() { Count = 0, InvalidParameters = invalidParameters }
+            : new DeleteResponse() { Count = count ?? 0, InvalidParameters = invalidParameters };
         }
 
-        public static GetAllResponse CreateGetAllResponse(IEnumerable<MongoRecord>? records)
+        public static GetAllResponse CreateGetAllResponse(bool invalidParameters, IEnumerable<MongoRecord>? records)
         {
-            if (records?.Count() <= 0)
+            if (invalidParameters)
             {
-                return new GetAllResponse() { Exists = false };
+                return new GetAllResponse() { Exists = false, InvalidParameters = invalidParameters };
             }
             else
             {
                 var converted = records?.Select(Convert) ?? Enumerable.Empty<Record>();
 
-                GetAllResponse response = new() { Exists = true };
+                GetAllResponse response = new() { Exists = converted.Any(), InvalidParameters = invalidParameters };
                 response.Records.AddRange(converted);
 
                 return response;

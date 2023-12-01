@@ -31,5 +31,27 @@ namespace PaySmartly.Persistance.Mongo
         {
             return (request?.From <= request?.To) && request?.Limit > 0;
         }
+
+        public static bool IsValidCreateRequest(CreateRequest? request)
+        {
+            Record? record = request?.Record;
+
+            return
+                !string.IsNullOrEmpty(record?.EmployeeFirstName) &&
+                !string.IsNullOrEmpty(record?.EmployeeLastName) &&
+                record?.AnnualSalary is not null &&
+                record?.SuperRate is not null &&
+                record?.PayPeriodFrom is not null && record?.PayPeriodFrom != default &&
+                record?.PayPeriodTo is not null && record?.PayPeriodTo != default &&
+                record?.RoundTo is not null &&
+                record?.Months is not null &&
+                record?.GrossIncome is not null &&
+                record?.IncomeTax is not null &&
+                record?.NetIncome is not null &&
+                record?.Super is not null &&
+                !string.IsNullOrEmpty(record?.RequesterFirstName) &&
+                !string.IsNullOrEmpty(record?.RequesterFirstName) &&
+                record?.CreatedAt is not null && record?.CreatedAt != default;
+        }
     }
 }
