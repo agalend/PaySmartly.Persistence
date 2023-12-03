@@ -51,7 +51,7 @@ namespace PaySmartly.Persistance.Repository
         {
             IEnumerable<MongoRecord> records = await paySlipRecords
                 .Find(record => record.EmployeeFirstName == firstName && record.EmployeeLastName == lastName)
-                .SortBy(record => record.CreatedAt)
+                .SortByDescending(record => record.CreatedAt)
                 .Skip(offset)
                 .Limit(limit)
                 .ToListAsync();
@@ -63,7 +63,7 @@ namespace PaySmartly.Persistance.Repository
         {
             IEnumerable<MongoRecord> records = await paySlipRecords
                 .Find(record => record.SuperRate >= from && record.SuperRate <= to)
-                .SortBy(record => record.CreatedAt)
+                .SortByDescending(record => record.CreatedAt)
                 .Skip(offset)
                 .Limit(limit)
                 .ToListAsync();
@@ -75,7 +75,7 @@ namespace PaySmartly.Persistance.Repository
         {
             IEnumerable<MongoRecord> records = await paySlipRecords
                 .Find(record => record.AnnualSalary >= from && record.AnnualSalary <= to)
-                .SortBy(record => record.CreatedAt)
+                .SortByDescending(record => record.CreatedAt)
                 .Skip(offset)
                 .Limit(limit)
                 .ToListAsync();
