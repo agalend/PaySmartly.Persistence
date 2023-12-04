@@ -6,7 +6,7 @@ namespace PaySmartly.Persistance.Repository
 {
     public class MongoRepository : IRepository<MongoRecord>
     {
-        private readonly IMongoCollection<MongoRecord> paySlipRecords;
+        private readonly IMongoCollection<MongoRecord> recordsCollection;
 
         public MongoRepository(IOptions<BookStoreDatabaseSettings> bookStoreDatabaseSettings)
         {
@@ -14,12 +14,12 @@ namespace PaySmartly.Persistance.Repository
 
             IMongoDatabase mongoDatabase = mongoClient.GetDatabase(bookStoreDatabaseSettings.Value.DatabaseName);
 
-            paySlipRecords = mongoDatabase.GetCollection<MongoRecord>(bookStoreDatabaseSettings.Value.BooksCollectionName);
+            recordsCollection = mongoDatabase.GetCollection<MongoRecord>(bookStoreDatabaseSettings.Value.PaySlipsCollectionName);
         }
 
         public async Task<MongoRecord?> Add(MongoRecord paySlipRecord)
         {
-            await paySlipRecords.InsertOneAsync(paySlipRecord);
+            await recordsCollection.InsertOneAsync(paySlipRecord);
 
             MongoRecord? record = await Get(paySlipRecord.Id!);
 
@@ -28,28 +28,28 @@ namespace PaySmartly.Persistance.Repository
 
         public async Task<MongoRecord?> Get(string id)
         {
-            MongoRecord? record = await paySlipRecords.Find(x => x.Id == id).FirstOrDefaultAsync();
+            MongoRecord? record = await recordsCollection.Find(x => x.Id == id).FirstOrDefaultAsync();
 
             return record;
         }
 
         public async Task<long> Delete(string id)
         {
-            DeleteResult result = await paySlipRecords.DeleteOneAsync(x => x.Id == id);
+            DeleteResult result = await recordsCollection.DeleteOneAsync(x => x.Id == id);
 
             return result.DeletedCount;
         }
 
         public async Task<long> DeleteAll(string[] ids)
         {
-            DeleteResult result = await paySlipRecords.DeleteManyAsync(record => ids.Contains(record.Id));
+            DeleteResult result = await recordsCollection.DeleteManyAsync(record => ids.Contains(record.Id));
 
             return result.DeletedCount;
         }
 
         public async Task<IEnumerable<MongoRecord>> GetAllForEmployee(string firstName, string lastName, int limit, int offset)
         {
-            IEnumerable<MongoRecord> records = await paySlipRecords
+            IEnumerable<MongoRecord> records = await recordsCollection
                 .Find(record => record.EmployeeFirstName == firstName && record.EmployeeLastName == lastName)
                 .SortByDescending(record => record.CreatedAt)
                 .Skip(offset)
@@ -61,7 +61,7 @@ namespace PaySmartly.Persistance.Repository
 
         public async Task<IEnumerable<MongoRecord>> GetAllForSuperRate(double from, double to, int limit, int offset)
         {
-            IEnumerable<MongoRecord> records = await paySlipRecords
+            IEnumerable<MongoRecord> records = await recordsCollection
                 .Find(record => record.SuperRate >= from && record.SuperRate <= to)
                 .SortByDescending(record => record.CreatedAt)
                 .Skip(offset)
@@ -73,7 +73,7 @@ namespace PaySmartly.Persistance.Repository
 
         public async Task<IEnumerable<MongoRecord>> GetAllForAnnualSalary(double from, double to, int limit, int offset)
         {
-            IEnumerable<MongoRecord> records = await paySlipRecords
+            IEnumerable<MongoRecord> records = await recordsCollection
                 .Find(record => record.AnnualSalary >= from && record.AnnualSalary <= to)
                 .SortByDescending(record => record.CreatedAt)
                 .Skip(offset)
