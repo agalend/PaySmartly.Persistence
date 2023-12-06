@@ -6,16 +6,19 @@ using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
+using PaySmartly.Persistance.Env;
 
-// TODO: set service name somewhere!!!
 string ServiceName = "Legislation Service";
 
 var builder = WebApplication.CreateSlimBuilder(args);
 AddOpenTelemetryLogging(builder);
 
-builder.Services.Configure<BookStoreDatabaseSettings>(builder.Configuration.GetSection("BookStoreDatabase"));
+IConfigurationSection dbSettings = builder.Configuration.GetSection("PaySlipsDatabase");
+builder.Services.Configure<PaySlipsDatabaseSettings>(dbSettings);
 builder.Services.AddSingleton<IRepository<MongoRecord>, MongoRepository>();
+builder.Services.AddSingleton<IEnvProvider, EnvProvider>();
 builder.Services.AddGrpc();
+
 AddOpenTelemetryService(builder);
 
 var app = builder.Build();

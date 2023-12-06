@@ -1,6 +1,6 @@
 namespace PaySmartly.Persistance.Mongo
 {
-    public class BookStoreDatabaseSettings
+    public class PaySlipsDatabaseSettings
     {
         public string ConnectionString { get; set; } = null!;
 

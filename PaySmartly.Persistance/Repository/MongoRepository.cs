@@ -1,5 +1,5 @@
-using Microsoft.Extensions.Options;
 using MongoDB.Driver;
+using PaySmartly.Persistance.Env;
 using PaySmartly.Persistance.Mongo;
 
 namespace PaySmartly.Persistance.Repository
@@ -8,13 +8,15 @@ namespace PaySmartly.Persistance.Repository
     {
         private readonly IMongoCollection<MongoRecord> recordsCollection;
 
-        public MongoRepository(IOptions<BookStoreDatabaseSettings> bookStoreDatabaseSettings)
+        public MongoRepository(IEnvProvider envProvider)
         {
-            MongoClient mongoClient = new(bookStoreDatabaseSettings.Value.ConnectionString);
+            PaySlipsDatabaseSettings settings = envProvider.GetDbSettings();
 
-            IMongoDatabase mongoDatabase = mongoClient.GetDatabase(bookStoreDatabaseSettings.Value.DatabaseName);
+            MongoClient mongoClient = new(settings.ConnectionString);
 
-            recordsCollection = mongoDatabase.GetCollection<MongoRecord>(bookStoreDatabaseSettings.Value.PaySlipsCollectionName);
+            IMongoDatabase mongoDatabase = mongoClient.GetDatabase(settings.DatabaseName);
+
+            recordsCollection = mongoDatabase.GetCollection<MongoRecord>(settings.PaySlipsCollectionName);
         }
 
         public async Task<MongoRecord?> Add(MongoRecord paySlipRecord)
