@@ -15,14 +15,15 @@ AddOpenTelemetryLogging(builder);
 
 IConfigurationSection dbSettings = builder.Configuration.GetSection("PaySlipsDatabase");
 builder.Services.Configure<PaySlipsDatabaseSettings>(dbSettings);
-builder.Services.AddSingleton<IRepository<MongoRecord>, MongoRepository>();
 builder.Services.AddSingleton<IEnvProvider, EnvProvider>();
+builder.Services.AddSingleton<IRepository<MongoRecord>, MongoRepository>();
 builder.Services.AddGrpc();
 
 AddOpenTelemetryService(builder);
 
 var app = builder.Build();
 app.MapGrpcService<PersistanceService>();
+app.MapGet("/health", () => Results.Ok());
 
 app.Run();
 

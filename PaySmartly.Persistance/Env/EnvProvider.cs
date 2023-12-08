@@ -9,14 +9,14 @@ namespace PaySmartly.Persistance.Env
         PaySlipsDatabaseSettings GetDbSettings();
     }
 
-    public class EnvProvider(IOptions<PaySlipsDatabaseSettings> bookStoreDatabaseSettings) : IEnvProvider
+    public class EnvProvider(IOptions<PaySlipsDatabaseSettings> paySlipsDatabaseSettings) : IEnvProvider
     {
-        private readonly IOptions<PaySlipsDatabaseSettings> bookStoreDatabaseSettings = bookStoreDatabaseSettings;
+        private readonly PaySlipsDatabaseSettings defaultSettings = paySlipsDatabaseSettings.Value;
 
         public PaySlipsDatabaseSettings GetDbSettings()
         {
-            PaySlipsDatabaseSettings settings = bookStoreDatabaseSettings.Value;
             string? connectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING");
+            PaySlipsDatabaseSettings settings = defaultSettings;
 
             if (connectionString is not null)
             {
