@@ -8,7 +8,7 @@ using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using PaySmartly.Persistance.Env;
 
-string ServiceName = "Legislation Service";
+string ServiceName = "Persistance Service";
 
 var builder = WebApplication.CreateSlimBuilder(args);
 AddOpenTelemetryLogging(builder);

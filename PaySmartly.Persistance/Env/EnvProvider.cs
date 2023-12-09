@@ -5,7 +5,6 @@ namespace PaySmartly.Persistance.Env
 {
     public interface IEnvProvider
     {
-        string GetServiceName();
         PaySlipsDatabaseSettings GetDbSettings();
     }
 
@@ -29,11 +28,6 @@ namespace PaySmartly.Persistance.Env
             }
 
             return settings;
-        }
-
-        public string GetServiceName()
-        {
-            throw new NotImplementedException();
         }
     }
 }
